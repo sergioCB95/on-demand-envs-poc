@@ -8,11 +8,11 @@ apt-get install -y git
 
 echo "cloning repo"
 mkdir /app
-git clone "" /app
+git clone "https://github.com/sergioCB95/on-demand-envs-poc.git" /app
 cd /app/$APP_DIR
 
 echo "installing npm packages"
-npm install
+make install
 
 echo "running the app"
 make start

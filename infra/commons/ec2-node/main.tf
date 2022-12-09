@@ -11,7 +11,7 @@ resource "aws_instance" "ec2_backend_server" {
 }
 
 data "template_file" "user_data" {
-  template = file("user-data/user-data.sh")
+  template = file("${path.module}/user-data/user-data.sh")
   vars = {
     APP_DIR = var.app_dir,
   }
@@ -28,7 +28,7 @@ resource "aws_security_group" "sg_backend_server" {
     protocol    = "tcp"
     from_port   = 22
     to_port     = 22
-    cidr_blocks = "0.0.0.0/0"
+    cidr_blocks = ["0.0.0.0/0"]
     description = "Allow ssh access to specefic IPs only"
 
   }
@@ -36,7 +36,7 @@ resource "aws_security_group" "sg_backend_server" {
     from_port   = var.app_port
     to_port     = var.app_port
     protocol    = "tcp"
-    cidr_blocks = "0.0.0.0/0"
+    cidr_blocks = ["0.0.0.0/0"]
     description = "Allow HTTP traffic to the instance"
   }
   egress {
