@@ -1,5 +1,5 @@
 install:
-	npm run install
+	npm install
 start:
 	npm run build
 	npm run start:prod
