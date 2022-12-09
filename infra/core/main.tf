@@ -9,7 +9,7 @@ terraform {
   backend "s3" {
     bucket = "on-demand-envs-terraform-state"
     key    = "states/core"
-    region = var.region
+    region = "eu-central-1"
   }
 
   required_version = ">= 1.2.0"
