@@ -1,0 +1,29 @@
+version: 2.1
+
+orbs:
+  terraform: circleci/terraform@3.2.0
+# Define the jobs we want to run for this project
+jobs:
+  build-core:
+    executor: terraform/default
+    steps:
+      - checkout
+      - terraform workspace new test-${CIRCLE_SHA1}
+      - terraform/init:
+          path: .
+      - terraform/plan:
+          path: ./infra/core
+      - terraform/apply:
+          path: ./infra/core
+      - terraform/destroy:
+          path: ./infra/core
+      - terraform workspace delete test-${CIRCLE_SHA1}
+
+
+# Orchestrate our job run sequence
+workflows:
+  integration_test:
+    jobs:
+      - build-core:
+          context:
+            - personal-aws-context
