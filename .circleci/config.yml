@@ -56,7 +56,7 @@ workflows:
       - plan-apply:
           project: core
           requires:
-            - hold-destroy
+            - hold-apply
           context:
             - personal-aws-context
       - hold-destroy:
