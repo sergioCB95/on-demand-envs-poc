@@ -5,31 +5,27 @@ executors:
       - image: docker.mirror.hashicorp.services/hashicorp/terraform:1.3.6
     working_directory: /tmp/project
 # Define the jobs we want to run for this project
+
+parameters:
+  run_integration_tests:
+    type: boolean
+    default: false
+
 jobs:
   plan-apply:
+    parameters:
+      project:
+        type: string
     executor: terraform
     steps:
       - checkout
       - run:
-          name: terraform init & plan
+          name: terraform init, plan & apply
           command: |
-            cd ./infra/core
+            cd ./infra/<< parameters.project >>
             terraform init -input=false
             terraform workspace new test-${CIRCLE_SHA1}
             terraform plan -out tfapply
-      - persist_to_workspace:
-          root: .
-          paths:
-            - .
-  apply:
-    executor: terraform
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: terraform
-          command: |
-            cd ./infra/core
             terraform apply -auto-approve tfapply
       - persist_to_workspace:
           root: .
@@ -41,49 +37,26 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: terraform create destroy plan
+          name: terraform create destroy plan & destroy
           command: |
-            cd ./infra/core
+            cd ./infra/<< parameters.project >>
             terraform plan -destroy -out tfdestroy
+            terraform apply -auto-approve tfdestroy
+            terraform workspace switch default
+            terraform workspace delete test-${CIRCLE_SHA1}
       - persist_to_workspace:
           root: .
           paths:
             - .
 
-  destroy:
-    executor: terraform
-    steps:
-      - attach_workspace:
-          at: .
-      - run:
-          name: terraform destroy
-          command: |
-            cd ./infra/core
-            terraform apply -auto-approve tfdestroy
-            terraform workspace delete test-${CIRCLE_SHA1}
-
 
 # Orchestrate our job run sequence
 workflows:
   integration_test:
+    when: << pipeline.parameters.run_integration_tests >>
     jobs:
       - plan-apply:
-          context:
-            - personal-aws-context
-      - hold-apply:
-          type: approval
-          requires:
-            - plan-apply
-          context:
-            - personal-aws-context
-      - apply:
-          requires:
-            - hold-apply
-          context:
-            - personal-aws-context
-      - plan-destroy:
-          requires:
-            - apply
+          project: core
           context:
             - personal-aws-context
       - hold-destroy:
@@ -92,7 +65,8 @@ workflows:
             - plan-destroy
           context:
             - personal-aws-context
-      - destroy:
+      - plan-destroy:
+          project: core
           requires:
             - hold-destroy
           context:
