@@ -29,6 +29,24 @@ data "terraform_remote_state" "core" {
   }
 }
 
+data "terraform_remote_state" "back" {
+  backend = "s3"
+  workspace = terraform.workspace
+  config = {
+    bucket = "on-demand-envs-terraform-state"
+    key = "states/back"
+    region  = "eu-central-1"
+  }
+}
+
+data "template_file" "user_data" {
+  template = file("${path.module}/user-data/user-data.sh")
+  vars = {
+    APP_DIR = "back"
+    BACKEND_URL = data.terraform_remote_state.back.outputs.ec2_url
+  }
+}
+
 module "ec2-backend" {
   source = "../commons/ec2-node"
 
@@ -38,4 +56,5 @@ module "ec2-backend" {
   app_port = "3000"
   vpc_id = data.terraform_remote_state.core.outputs.vpc_id
   vpc_subnet = data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id
+  user_data = data.template_file.user_data.rendered
 }

@@ -3,17 +3,10 @@ resource "aws_instance" "ec2_backend_server" {
   vpc_security_group_ids      = [aws_security_group.sg_backend_server.id]
   associate_public_ip_address = true
   subnet_id                   = var.vpc_subnet
-  user_data                   = data.template_file.user_data.rendered
+  user_data                   = var.user_data
   instance_type = "t2.micro"
   tags = {
     Name = "${var.app_name}-ec2"
-  }
-}
-
-data "template_file" "user_data" {
-  template = file("${path.module}/user-data/user-data.sh")
-  vars = {
-    APP_DIR = var.app_dir,
   }
 }
 

@@ -2,10 +2,6 @@ variable app_name {
   description = "Application name"
 }
 
-variable app_dir {
-  description = "Application dir in the repo"
-}
-
 variable app_port {
   description = "Application port"
 }
@@ -20,4 +16,9 @@ variable vpc_id {
 
 variable vpc_subnet {
   description = "VPC Subnet"
+}
+
+variable user_data {
+  description = "User data entity"
+  type = string
 }
