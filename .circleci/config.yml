@@ -33,5 +33,5 @@ workflows:
       - build-core:
           context:
             - personal-aws-context
-          require:
-            hold
+          requires:
+            - hold
