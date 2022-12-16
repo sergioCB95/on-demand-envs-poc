@@ -32,6 +32,9 @@ jobs:
           paths:
             - .
   plan-destroy:
+    parameters:
+      project:
+        type: string
     executor: terraform
     steps:
       - attach_workspace:
