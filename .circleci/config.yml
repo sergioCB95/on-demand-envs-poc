@@ -8,7 +8,7 @@ jobs:
     executor: terraform/default
     steps:
       - checkout
-      - terraform workspace new test-${CIRCLE_SHA1}
+      - run: terraform workspace new test-${CIRCLE_SHA1}
       - terraform/init:
           path: .
       - terraform/plan:
@@ -17,7 +17,7 @@ jobs:
           path: ./infra/core
       - terraform/destroy:
           path: ./infra/core
-      - terraform workspace delete test-${CIRCLE_SHA1}
+      - run: terraform workspace delete test-${CIRCLE_SHA1}
 
 
 # Orchestrate our job run sequence
@@ -25,5 +25,6 @@ workflows:
   integration_test:
     jobs:
       - build-core:
+          type: approval
           context:
             - personal-aws-context
