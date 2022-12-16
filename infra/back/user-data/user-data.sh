@@ -16,7 +16,7 @@ mkdir /app
 git clone "https://github.com/sergioCB95/on-demand-envs-poc.git" /app
 cd /app/${APP_DIR}
 
-export DB_URL="${DB_URL}"
+export DATABASE_URL="${DATABASE_URL}"
 
 echo "installing npm packages"
 make install

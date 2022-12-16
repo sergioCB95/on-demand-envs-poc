@@ -33,7 +33,7 @@ data "template_file" "user_data" {
   template = file("${path.module}/user-data/user-data.sh")
   vars = {
     APP_DIR = "back"
-    DB_URL = "postgresql://${local.db_name}:${local.db_password}@${aws_db_instance.db.address}:5432/mydb?schema=public"
+    DATABASE_URL = "postgresql://${local.db_name}:${local.db_password}@${aws_db_instance.db.address}:5432/mydb?schema=public"
   }
 }
 
