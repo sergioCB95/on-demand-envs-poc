@@ -51,7 +51,6 @@ module "ec2-backend" {
   source = "../commons/ec2-node"
 
   ami = "ami-076309742d466ad69"
-  app_dir = "front"
   app_name = "${terraform.workspace}-on-demand-envs-poc"
   app_port = "3000"
   vpc_id = data.terraform_remote_state.core.outputs.vpc_id

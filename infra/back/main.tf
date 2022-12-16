@@ -41,7 +41,6 @@ module "ec2-backend" {
   source = "../commons/ec2-node"
 
   ami = "ami-076309742d466ad69"
-  app_dir = "back"
   app_name = "${terraform.workspace}-on-demand-envs-poc"
   app_port = "4000"
   vpc_id = data.terraform_remote_state.core.outputs.vpc_id
@@ -62,8 +61,9 @@ locals {
 
 resource "aws_db_instance" "db" {
   allocated_storage    = 10
-  db_name              = "${terraform.workspace}-on-demand-envs-poc-db"
-  engine               = "postgresql"
+  identifier           = "${terraform.workspace}-on-demand-envs-poc-db"
+  db_name              = "mydb"
+  engine               = "postgres"
   instance_class       = "db.t3.micro"
   username             = "postgres"
   password             = random_password.password.result
