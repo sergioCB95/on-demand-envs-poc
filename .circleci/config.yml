@@ -24,7 +24,8 @@ jobs:
 workflows:
   integration_test:
     jobs:
-      - build-core:
+      - hold:
           type: approval
+      - build-core:
           context:
             - personal-aws-context
