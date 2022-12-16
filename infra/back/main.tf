@@ -59,6 +59,29 @@ locals {
   db_password = random_password.password.result
 }
 
+
+resource "aws_security_group" "database_sg" {
+  name   = "${terraform.workspace}-on-demand-envs-poc-db-sg"
+  vpc_id = data.terraform_remote_state.core.outputs.vpc_id
+  tags = {
+    Name = "${terraform.workspace}-on-demand-envs-poc-db-sg"
+  }
+
+  ingress {
+    protocol    = "tcp"
+    description = "Allow HTTP traffic to the instance"
+    from_port = 5432
+    to_port = 5432
+    security_groups = [module.ec2-backend.ec2_sg_id]
+  }
+  egress {
+    protocol    = -1
+    from_port   = 0
+    to_port     = 0
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
 resource "aws_db_instance" "db" {
   allocated_storage    = 10
   identifier           = "${terraform.workspace}-on-demand-envs-poc-db"
@@ -68,4 +91,6 @@ resource "aws_db_instance" "db" {
   username             = "postgres"
   password             = random_password.password.result
   skip_final_snapshot  = true
+  vpc_security_group_ids  = [aws_security_group.database_sg]
+  db_subnet_group_name    = data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id
 }
