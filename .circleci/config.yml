@@ -62,7 +62,7 @@ workflows:
       - hold-destroy:
           type: approval
           requires:
-            - plan-destroy
+            - plan-apply
           context:
             - personal-aws-context
       - plan-destroy:
