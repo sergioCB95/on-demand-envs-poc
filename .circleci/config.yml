@@ -13,6 +13,7 @@ jobs:
       - run:
           name: terraform init & plan
           command: |
+            cd ./infra/core
             terraform init -input=false
             terraform workspace new test-${CIRCLE_SHA1}
             terraform plan -out tfapply
@@ -28,6 +29,7 @@ jobs:
       - run:
           name: terraform
           command: |
+            cd ./infra/core
             terraform apply -auto-approve tfapply
       - persist_to_workspace:
           root: .
@@ -41,6 +43,7 @@ jobs:
       - run:
           name: terraform create destroy plan
           command: |
+            cd ./infra/core
             terraform plan -destroy -out tfdestroy
       - persist_to_workspace:
           root: .
@@ -55,6 +58,7 @@ jobs:
       - run:
           name: terraform destroy
           command: |
+            cd ./infra/core
             terraform apply -auto-approve tfdestroy
             terraform workspace delete test-${CIRCLE_SHA1}
 
