@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import {Body, Controller, Get, Post} from '@nestjs/common';
 import { AppService } from './app.service';
 import { User } from '@prisma/client';
 
@@ -9,5 +9,10 @@ export class AppController {
   @Get()
   getAll(): Promise<User[]> {
     return this.appService.getAll();
+  }
+
+  @Post()
+  post(@Body() user: User): Promise<void> {
+    return this.appService.post(user);
   }
 }

@@ -8,4 +8,10 @@ export class AppService {
   async getAll(): Promise<User[]> {
     return this.prisma.user.findMany();
   }
+
+  async post(user: User): Promise<void> {
+    await this.prisma.user.create({
+      data: user
+    });
+  }
 }
