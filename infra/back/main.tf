@@ -82,6 +82,20 @@ resource "aws_security_group" "database_sg" {
   }
 }
 
+resource "aws_db_subnet_group" "db_subnet_group" {
+  name       = "db_subnet_group"
+  subnet_ids = [
+    data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id,
+    data.terraform_remote_state.core.outputs.vpc_public_subnet_2_id,
+    data.terraform_remote_state.core.outputs.vpc_private_subnet_1_id,
+    data.terraform_remote_state.core.outputs.vpc_private_subnet_2_id
+  ]
+
+  tags = {
+    Name = "My DB subnet group"
+  }
+}
+
 resource "aws_db_instance" "db" {
   allocated_storage    = 10
   identifier           = "${terraform.workspace}-on-demand-envs-poc-db"
@@ -91,6 +105,6 @@ resource "aws_db_instance" "db" {
   username             = "postgres"
   password             = random_password.password.result
   skip_final_snapshot  = true
-  vpc_security_group_ids  = [aws_security_group.database_sg]
-  db_subnet_group_name    = data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id
+  vpc_security_group_ids  = [aws_security_group.database_sg.id]
+  db_subnet_group_name    = aws_db_subnet_group.db_subnet_group.name
 }
