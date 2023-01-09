@@ -10,6 +10,9 @@ jobs:
     parameters:
       project:
         type: string
+      tfvars:
+        type: string
+        default: ""
     executor: terraform
     steps:
       - checkout
@@ -17,6 +20,7 @@ jobs:
           name: terraform init, plan & apply
           command: |
             cd ./infra/<< parameters.project >>
+            echo "<< parameters.tfvars >>" > terraform.tfvars
             terraform init -input=false
             terraform workspace new test-${CIRCLE_SHA1}
             terraform plan -out tfapply
@@ -59,10 +63,24 @@ workflows:
             - hold-apply
           context:
             - personal-aws-context
+      - plan-apply:
+          project: back
+          tfvars: |
+            db_snapshot_id = "test-seed"
+          requires:
+            - plan-apply-core
+          context:
+            - personal-aws-context
       - hold-destroy:
           type: approval
           requires:
             - plan-apply
+          context:
+            - personal-aws-context
+      - plan-destroy:
+          project: back
+          requires:
+            - hold-destroy
           context:
             - personal-aws-context
       - plan-destroy:

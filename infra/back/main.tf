@@ -99,6 +99,7 @@ resource "aws_db_subnet_group" "db_subnet_group" {
 }
 
 resource "aws_db_instance" "db" {
+  snapshot_identifier  = var.db_snapshot_id
   allocated_storage    = 10
   identifier           = "${terraform.workspace}-on-demand-envs-poc-db"
   db_name              = "mydb"
