@@ -42,7 +42,7 @@ data "terraform_remote_state" "back" {
 data "template_file" "user_data" {
   template = file("${path.module}/user-data/user-data.sh")
   vars = {
-    APP_DIR = "back"
+    APP_DIR = "front"
     BACKEND_URL = data.terraform_remote_state.back.outputs.ec2_url
   }
 }
@@ -51,7 +51,7 @@ module "ec2-backend" {
   source = "../commons/ec2-node"
 
   ami = "ami-076309742d466ad69"
-  app_name = "${terraform.workspace}-on-demand-envs-poc"
+  app_name = "${terraform.workspace}-on-demand-envs-poc-front"
   app_port = "3000"
   vpc_id = data.terraform_remote_state.core.outputs.vpc_id
   vpc_subnet = data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id

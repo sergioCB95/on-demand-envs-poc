@@ -33,7 +33,7 @@ data "template_file" "user_data" {
   template = file("${path.module}/user-data/user-data.sh")
   vars = {
     APP_DIR = "back"
-    DATABASE_URL = "postgresql://${local.db_name}:${local.db_password}@${aws_db_instance.db.address}:5432/mydb?schema=public"
+    DATABASE_URL = "postgresql://${local.db_name}:${urlencode(local.db_password)}@${aws_db_instance.db.address}:5432/mydb?schema=public"
   }
 }
 
@@ -41,7 +41,7 @@ module "ec2-backend" {
   source = "../commons/ec2-node"
 
   ami = "ami-076309742d466ad69"
-  app_name = "${terraform.workspace}-on-demand-envs-poc"
+  app_name = "${terraform.workspace}-on-demand-envs-poc-back"
   app_port = "4000"
   vpc_id = data.terraform_remote_state.core.outputs.vpc_id
   vpc_subnet = data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id
@@ -49,9 +49,11 @@ module "ec2-backend" {
 }
 
 resource "random_password" "password" {
-  length           = 16
-  special          = true
-  override_special = "!#$%&*()-_=+[]{}<>:?"
+  length            = 40
+  special           = false
+  keepers           = {
+    pass_version  = 1
+  }
 }
 
 locals {
@@ -83,7 +85,7 @@ resource "aws_security_group" "database_sg" {
 }
 
 resource "aws_db_subnet_group" "db_subnet_group" {
-  name       = "db_subnet_group"
+  name       = "${terraform.workspace}_on_demand_envs_poc_db_subnet_group"
   subnet_ids = [
     data.terraform_remote_state.core.outputs.vpc_public_subnet_1_id,
     data.terraform_remote_state.core.outputs.vpc_public_subnet_2_id,
