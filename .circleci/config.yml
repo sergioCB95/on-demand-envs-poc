@@ -44,7 +44,7 @@ jobs:
             terraform plan -destroy -out tfdestroy
             terraform apply -auto-approve tfdestroy
             terraform workspace select default
-            terraform workspace delete test-${CIRCLE_SHA1}
+            terraform workspace delete test-<< pipeline.id >>
       - persist_to_workspace:
           root: .
           paths:
