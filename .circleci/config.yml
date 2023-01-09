@@ -68,7 +68,7 @@ workflows:
           name: plan-apply-back
           project: back
           tfvars: |
-            db_snapshot_id = "test-seed"
+            db_snapshot_id = \"test-seed\"
           requires:
             - plan-apply-core
           context:
