@@ -58,12 +58,14 @@ workflows:
       - hold-apply:
           type: approval
       - plan-apply:
+          name: plan-apply-core
           project: core
           requires:
             - hold-apply
           context:
             - personal-aws-context
       - plan-apply:
+          name: plan-apply-back
           project: back
           tfvars: |
             db_snapshot_id = "test-seed"
@@ -78,14 +80,16 @@ workflows:
           context:
             - personal-aws-context
       - plan-destroy:
+          name: plan-destroy-back
           project: back
           requires:
             - hold-destroy
           context:
             - personal-aws-context
       - plan-destroy:
+          name: plan-destroy-core
           project: core
           requires:
-            - hold-destroy
+            - plan-destroy-back
           context:
             - personal-aws-context
