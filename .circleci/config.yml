@@ -22,7 +22,7 @@ jobs:
             cd ./infra/<< parameters.project >>
             echo "<< parameters.tfvars >>" > terraform.tfvars
             terraform init -input=false
-            terraform workspace new test-${CIRCLE_SHA1}
+            terraform workspace new test-<< pipeline.id >>
             terraform plan -out tfapply
             terraform apply -auto-approve tfapply
       - persist_to_workspace:
@@ -44,7 +44,7 @@ jobs:
             terraform plan -destroy -out tfdestroy
             terraform apply -auto-approve tfdestroy
             terraform workspace select default
-            terraform workspace delete test-<< pipeline.number >>
+            terraform workspace delete test-<< pipeline.id >>
       - persist_to_workspace:
           root: .
           paths:
