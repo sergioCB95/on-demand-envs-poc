@@ -41,6 +41,7 @@ jobs:
           name: terraform create destroy plan & destroy
           command: |
             cd ./infra/<< parameters.project >>
+            terraform init -input=false
             terraform plan -destroy -out tfdestroy
             terraform apply -auto-approve tfdestroy
             terraform workspace select default
@@ -73,6 +74,13 @@ workflows:
             - plan-apply-core
           context:
             - personal-aws-context
+      - plan-apply:
+          name: plan-apply-front
+          project: front
+          requires:
+            - plan-apply-back
+          context:
+            - personal-aws-context
       - hold-destroy:
           type: approval
           requires:
@@ -80,10 +88,17 @@ workflows:
           context:
             - personal-aws-context
       - plan-destroy:
+          name: plan-destroy-front
+          project: front
+          requires:
+            - hold-destroy
+          context:
+            - personal-aws-context
+      - plan-destroy:
           name: plan-destroy-back
           project: back
           requires:
-            - hold-destroy
+            - plan-destroy-front
           context:
             - personal-aws-context
       - plan-destroy:
@@ -93,4 +108,3 @@ workflows:
             - plan-destroy-back
           context:
             - personal-aws-context
-
