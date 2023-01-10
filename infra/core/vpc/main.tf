@@ -51,6 +51,8 @@ resource "aws_subnet" "public_subnet_1" {
   tags = {
     Name = "${var.vpc_name}-PublicSubnet01"
   }
+
+  depends_on = [aws_vpc.main]
 }
 
 resource "aws_subnet" "public_subnet_2" {
@@ -62,6 +64,8 @@ resource "aws_subnet" "public_subnet_2" {
   tags = {
     Name = "${var.vpc_name}-PublicSubnet02"
   }
+
+  depends_on = [aws_vpc.main]
 }
 
 resource "aws_nat_gateway" "nat_gateway_1" {

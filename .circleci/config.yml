@@ -44,7 +44,7 @@ jobs:
             terraform plan -destroy -out tfdestroy
             terraform apply -auto-approve tfdestroy
             terraform workspace select default
-            terraform workspace delete test-<< pipeline.id >>
+            terraform workspace delete test-<< pipeline.number >>
       - persist_to_workspace:
           root: .
           paths:
@@ -93,3 +93,4 @@ workflows:
             - plan-destroy-back
           context:
             - personal-aws-context
+
