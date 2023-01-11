@@ -17,7 +17,3 @@ output "vpc_private_subnet_1_id" {
 output "vpc_private_subnet_2_id" {
   value = module.vpc.private_subnet_1_id
 }
-
-output "vpc_security_group_id_id" {
-  value = module.vpc.security_group_id
-}

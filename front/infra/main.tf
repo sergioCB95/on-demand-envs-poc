@@ -48,7 +48,7 @@ data "template_file" "user_data" {
 }
 
 module "ec2-backend" {
-  source = "../commons/ec2-node"
+  source = "../../infra/commons/ec2-node"
 
   ami = "ami-076309742d466ad69"
   app_name = "${terraform.workspace}-on-demand-envs-poc-front"

@@ -8,7 +8,7 @@ executors:
 jobs:
   plan-apply:
     parameters:
-      project:
+      path:
         type: string
       tfvars:
         type: string
@@ -19,7 +19,7 @@ jobs:
       - run:
           name: terraform init, plan & apply
           command: |
-            cd ./infra/<< parameters.project >>
+            cd ./<< parameters.path >>
             echo "<< parameters.tfvars >>" > terraform.tfvars
             terraform init -input=false
             terraform workspace new test-<< pipeline.id >>
@@ -31,7 +31,7 @@ jobs:
             - .
   plan-destroy:
     parameters:
-      project:
+      path:
         type: string
     executor: terraform
     steps:
@@ -40,7 +40,7 @@ jobs:
       - run:
           name: terraform create destroy plan & destroy
           command: |
-            cd ./infra/<< parameters.project >>
+            cd ./<< parameters.path >>
             terraform init -input=false
             terraform plan -destroy -out tfdestroy
             terraform apply -auto-approve tfdestroy
@@ -60,14 +60,14 @@ workflows:
           type: approval
       - plan-apply:
           name: plan-apply-core
-          project: core
+          path: infra/core
           requires:
             - hold-apply
           context:
             - personal-aws-context
       - plan-apply:
           name: plan-apply-back
-          project: back
+          path: back/infra
           tfvars: |
             db_snapshot_id = \"test-seed\"
           requires:
@@ -76,7 +76,7 @@ workflows:
             - personal-aws-context
       - plan-apply:
           name: plan-apply-front
-          project: front
+          path: front/infra
           requires:
             - plan-apply-back
           context:
@@ -89,21 +89,21 @@ workflows:
             - personal-aws-context
       - plan-destroy:
           name: plan-destroy-front
-          project: front
+          path: front/infra
           requires:
             - hold-destroy
           context:
             - personal-aws-context
       - plan-destroy:
           name: plan-destroy-back
-          project: back
+          path: back/infra
           requires:
             - plan-destroy-front
           context:
             - personal-aws-context
       - plan-destroy:
           name: plan-destroy-core
-          project: core
+          path: infra/core
           requires:
             - plan-destroy-back
           context:
